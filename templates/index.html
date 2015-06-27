@@ -129,6 +129,7 @@
 						{
 							method: 'post',
 							success: function(data) {
+								window.location.hash = 'results'
 							},
 							error: function(jqXHR) {
 								$('#voteresponse').empty()
