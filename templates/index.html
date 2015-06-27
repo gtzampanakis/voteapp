@@ -1,0 +1,240 @@
+# coding: utf-8
+<!DOCTYPE html>
+
+<%!
+	import cherrypy as cp
+%>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+	<meta name="description" content="Vote for the Gree referendum of the 7th of July 2015.">
+	<meta name="author" content="Giorgos Tzampanakis">
+	<meta name="keywords" content="greece,referendum,grexit">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+
+	<script src="https://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+    <link rel="icon" href="../../favicon.ico">
+
+	<title>Δημοσκόπηση για το δημοψήφισμα της 5ης Ιουλίου 2015</title>
+
+
+    <!-- Custom styles for this template -->
+    <link href="static/cover.css" rel="stylesheet">
+
+	<style>
+		#selects td {
+			padding: 2px;
+			text-align: left;
+		}
+		#submitrow td {
+			text-align: right;
+		}
+		.votetext {
+			font-size: larger;
+		}
+		#voteresponse {
+			text-align: right;
+			margin-top: 10px;
+		}
+		.voteerror {
+			color: #F0B2B2;
+		}
+	</style>
+
+	<script>
+
+		var voted = ('${cp.session.get("voted")}')
+
+		if (voted == '1') {
+			window.location.hash = 'results'
+		}
+
+		var options = {
+			width: '400px',
+			position: { my : "center", at: "center" }
+		}
+
+		var resultsGotten = null;
+
+		function resultsHashHandler() {
+			if (window.location.hash == '#results') {
+
+				$('#submitvote').button('disable')
+
+				$.ajax(
+					'results',
+					{
+						method: 'post',
+						success: function(data) {
+							var yesVotes = data.standings.yes
+							var noVotes = data.standings.no
+							var count = data.standings.yes + data.standings.no
+
+							var yesPerc = (data.standings.yes / parseFloat(count)) * 100
+							var noPerc = (data.standings.no / parseFloat(count)) * 100
+
+							$('#voteresponse').empty()
+
+							$('#resultsresponse')
+								.empty()
+								.append('<h4>Αποτελέσματα (σε ' + count + ' ψήφους):</h4>')
+								.append(
+									$('<ul>')
+										.append('<li>Ναι: ' + yesVotes + ' (' + yesPerc + ' %)</li>')
+										.append('<li>Όχι: ' + noVotes + ' (' + noPerc + ' %)</li>')
+								)
+						}
+					}
+				)
+
+				clearInterval(resultsHashChecker)
+			}
+		}
+
+		$(document).ready(function() {
+
+			resultsHashChecker = setInterval(resultsHashHandler, 250)
+
+			$('#lastelect').selectmenu(options)
+			$('#rfnd').selectmenu(options)
+
+			$('#submitvote').button().click(function(ev) {
+
+				var lastelect = $('#lastelect').val()
+				var rfnd = $('#rfnd').val()
+
+				if (!lastelect || !rfnd) {
+					$('#voteresponse').empty().append(
+						'<span class="voteerror">Παρακαλώ συμπληρώστε και τα δύο ανωτέρω πεδία</span>'
+					)
+				}
+				
+				else {
+					$.ajax(
+						'submitvote/' + lastelect + '/' + rfnd,
+						{
+							method: 'post',
+							success: function(data) {
+							},
+							error: function(jqXHR) {
+								$('#voteresponse').empty()
+								if (jqXHR.responseJSON.error == 'ALREADYVOTED')
+									$('#voteresponse').append(
+										'<span class="voteerror">Έχετε ήδη ψηφίσει. Δεν μπορείτε να ξαναψηφίσετε.</span>'
+									)
+							}
+						}
+					)
+				}
+			})
+		})
+
+	</script>
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              #### <h3 class="masthead-brand">Δημοψήφισμα της 5ης Ιουλίου 2015</h3>
+              #### <nav>
+              ####   <ul class="nav masthead-nav">
+              ####     <li class="active"><a href="#">Home</a></li>
+              ####     <li><a href="#">Features</a></li>
+              ####     <li><a href="#">Contact</a></li>
+              ####   </ul>
+              #### </nav>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h1 class="cover-heading">Δημοψήφισμα της 5ης Ιουλίου 2015</h1>
+			<p class="lead">Η κυβέρνηση προκήρυξε δημοψήφισμα για την Κυριακή 5
+			Ιουλίου 2015, με ερώτημα «Ναι ή Όχι στην πρόταση των δανειστών». <br>
+			<strong>Τι θα ψηφίσετε;</strong></p>
+
+			<table id="selects">
+				<tr>
+					<td class="votetext">Στις τελευταίες βουλευτικές εκλογές ψήφισα:</td>
+					<td>
+						<select id="lastelect">
+						<option value=""></option>
+						<option value="syriza">ΣΥΡΙΖΑ</option>
+						<option value="nd">Νέα Δημοκρατία</option>
+						<option value="xa">Χρυσή Αυγή</option>
+						<option value="potami">Το Ποτάμι</option>
+						<option value="kke">ΚΚΕ</option>
+						<option value="anel">Ανεξάρτητοι Έλληνες</option>
+						<option value="pasok">ΠΑΣΟΚ</option>
+						<option value="kidiso">Κίνημα Δημοκρατών Σοσιαλιστών</option>
+						<option value="ek">Ένωση Κεντρώων</option>
+						<option value="teleia">Τελεία</option>
+						<option value="laos">ΛΑΟΣ</option>
+						<option value="antarsya">ΑΝΤΑΡΣΥΑ</option>
+						<option value="dimar">Δημοκρατική Αριστερά</option>
+						<option value="other">Άλλο</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="votetext">Στο δημοψήφισμα της 5ης Ιουλίου 2015 θα ψηφίσω:</td>
+					<td>
+						<select id="rfnd">
+							<option value=""></option>
+							<option value="yes">Ναι στην πρόταση των δανειστών</option>
+							<option value="no">Όχι στην πρόταση των δανειστών</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="submitrow">
+					<td></td>
+					<td><input id="submitvote" type="submit" value="Υποβολή"></td>
+				</tr>
+			</table>
+
+			<div id="voteresponse">
+			</div>
+			<div id="resultsresponse">
+			</div>
+          </div>
+
+          ### <div class="mastfoot">
+          ###   <div class="inner">
+		  ###   	<p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by 
+		  ###   	<a href="https://twitter.com/mdo">@mdo</a>.</p>
+          ###   </div>
+          ### </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </body>
+</html>
