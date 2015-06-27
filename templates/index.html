@@ -72,6 +72,8 @@
 			if (window.location.hash == '#results') {
 
 				$('#submitvote').button('disable')
+				$('#lastelect').selectmenu('disable').val('')
+				$('#rfnd').selectmenu('disable').val('')
 
 				$.ajax(
 					'results',
@@ -223,12 +225,11 @@
 			</div>
           </div>
 
-          ### <div class="mastfoot">
-          ###   <div class="inner">
-		  ###   	<p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by 
-		  ###   	<a href="https://twitter.com/mdo">@mdo</a>.</p>
-          ###   </div>
-          ### </div>
+          <div class="mastfoot">
+            <div class="inner">
+				<p><a href="mailto:giorgos.tzampanakis@gmail.com">Ηλ. ταχυδρομείο</a> προς τον υπεύθυνο.</p>
+            </div>
+          </div>
 
         </div>
 
