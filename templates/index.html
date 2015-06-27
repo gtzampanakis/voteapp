@@ -92,11 +92,8 @@
 							$('#resultsresponse')
 								.empty()
 								.append('<h4>Αποτελέσματα (σε ' + count + ' ψήφους):</h4>')
-								.append(
-									$('<ul>')
-										.append('<li>Ναι: ' + yesVotes + ' (' + yesPerc + ' %)</li>')
-										.append('<li>Όχι: ' + noVotes + ' (' + noPerc + ' %)</li>')
-								)
+								.append('<div>Ναι: ' + yesVotes + ' (' + yesPerc + ' %)</div>')
+								.append('<div>Όχι: ' + noVotes + ' (' + noPerc + ' %)</div>')
 						}
 					}
 				)
